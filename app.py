@@ -93,10 +93,41 @@ class Judge(db.Model):
 def home():
 	return render_template('home.html')
 
+@app.route('/register' , methods=['GET','POST'])
+def register():
+    if request.method == 'GET':
+        return render_template('register.html')
+    user = User( request.form['password'],request.form['email'],request.form['user_type'])
+    db.session.add(user)
+    db.session.commit()
+    flash('User successfully registered')
+    return redirect(url_for('login'))
+
+@app.route('/login',methods=['GET','POST'])
+def login():
+    if request.method == 'GET':
+        return render_template('login.html')
+    
+    email = request.form['email']
+    password = request.form['password']
+    remember_me = False
+    if 'remember_me' in request.form:
+        remember_me = True
+    registered_user = User.query.filter_by(email=email).first()
+    if registered_user is None:
+        flash('Username is invalid' , 'error')
+        return redirect(url_for('login'))
+    if not registered_user.check_password(password):
+        flash('Password is invalid','error')
+        return redirect(url_for('login'))
+    login_user(registered_user, remember = remember_me)
+    flash('Logged in successfully')
+    return redirect(url_for('home'))
+
 @app.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('index')) 
+    return redirect(url_for('home')) 
 
 @login_manager.user_loader
 def load_user(id):
