@@ -36,6 +36,18 @@ class User(db.Model):
     def is_authenticated(self):
         return True
 
+    def is_admin(self):
+        return (self.user_type == 'admin')
+
+    def is_debater(self):
+        return (self.user_type == 'debater')
+
+    def is_judge(self):
+        return (self.user_type == 'judge')
+
+    def is_tabmaster(self):
+        return (self.user_type == 'tabmaster')
+
     def is_active(self):
         return True
 
@@ -88,10 +100,34 @@ class Judge(db.Model):
 	def __init__(self, name):
 		self.name = name
 
+class Game(db.Model):
+    __tablename__= "games"
+    id = db.Column('game_id', db.Integer, primary_key=True)
+    name = db.Column(db.String(30))
+    goverment_id= db.Column(db.Integer, db.ForeignKey('teams.team_id'))
+    oposition_id = db.Column(db.Integer, db.ForeignKey('teams.team_id'))
+    round = db.Column(db.String(30))
+    time = db.Column(db.DateTime)
+
+    def __init__(self, name):
+        self.name = name
+
+
+        
 @app.route('/')
 @login_required
 def home():
 	return render_template('home.html')
+
+@app.route('/program')
+@login_required
+def program():
+    return render_template('program.html')
+
+@app.route('/about')
+@login_required
+def about_sfantu_gheorghe():
+    return render_template('about_sfantu_gheorghe.html')
 
 @app.route('/register' , methods=['GET','POST'])
 def register():
