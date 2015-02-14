@@ -36,6 +36,18 @@ class User(db.Model):
     def is_authenticated(self):
         return True
 
+    def is_admin(self):
+        return (self.user_type == 'admin')
+
+    def is_debater(self):
+        return (self.user_type == 'debater')
+
+    def is_judge(self):
+        return (self.user_type == 'judge')
+
+    def is_tabmaster(self):
+        return (self.user_type == 'tabmaster')
+
     def is_active(self):
         return True
 
@@ -88,15 +100,132 @@ class Judge(db.Model):
 	def __init__(self, name):
 		self.name = name
 
+<<<<<<< HEAD
+class Tabmaster(db.Model):
+    __tablename__="tabmasters"
+    id = db.Column('tabmaster_id', db.Integer, primary_key=True)
+    name = db.Column(db.String(30))
+
+    def __init__(self, name):
+        self.name = name
+    def __repr__(self):
+        return '<User %r %r>' % (self.name)
+
+
+@app.route('/admin/new_tabmaster', methods=['POST', 'GET'])
+@login_required
+def new_tabmaster():
+    if request.method == 'POST':
+        if not request.form['name']:
+            flash('Name is required', 'error')
+        else:
+            _tabmaster = Tabmaster(request.form['name'])
+            db.session.add(_tabmaster)
+            db.session.commit()
+            flash(_tabmaster.name + ' was successfully created')
+            print Tabmaster.query.get(1)
+            return redirect(url_for('admin'))
+    return render_template('new_tabmaster.html')
+
+@app.route('/admin/del_tabmaster', methods=['POST', 'GET'])
+@login_required
+def del_tabmaster():
+    print 'name'
+    if request.method == 'POST':
+        if not request.form['name']:
+            flash('Name is required', 'error')
+        else:
+            _tabmaster = Tabmaster.query.filter_by(name=request.form['name']).one()
+            #print  _tabmaster.id
+            db.session.delete(_tabmaster)
+            db.session.commit()
+            return redirect(url_for('admin'))
+    return render_template('del_tabmaster.html')
+
+
+@app.route('/admin')
+def admin():
+    return render_template('admin.html', tabmasters = Tabmaster.query.order_by(Tabmaster.id))    
+
+=======
+class Game(db.Model):
+    __tablename__= "games"
+    id = db.Column('game_id', db.Integer, primary_key=True)
+    name = db.Column(db.String(30))
+    goverment_id= db.Column(db.Integer, db.ForeignKey('teams.team_id'))
+    oposition_id = db.Column(db.Integer, db.ForeignKey('teams.team_id'))
+    round = db.Column(db.String(30))
+    time = db.Column(db.DateTime)
+
+    def __init__(self, name):
+        self.name = name
+
+
+        
+>>>>>>> 01f68bfe5178deddb2c2a21a3d6e4a4515422d62
 @app.route('/')
 @login_required
 def home():
+    if current_user.user_type == 'admin':
+        return render_template('admin.html')
 	return render_template('home.html')
+
+<<<<<<< HEAD
+=======
+@app.route('/program')
+@login_required
+def program():
+    return render_template('program.html')
+
+@app.route('/about')
+@login_required
+def about_sfantu_gheorghe():
+    return render_template('about_sfantu_gheorghe.html')
+>>>>>>> 01f68bfe5178deddb2c2a21a3d6e4a4515422d62
+
+@app.route('/register' , methods=['GET','POST'])
+def register():
+    if request.method == 'GET':
+        return render_template('register.html')
+    user = User( request.form['password'],request.form['email'],request.form['user_type'])
+    db.session.add(user)
+    db.session.commit()
+    flash('User successfully registered')
+    return redirect(url_for('login'))
+
+@app.route('/login',methods=['GET','POST'])
+def login():
+    if request.method == 'GET':
+        return render_template('login.html')
+    
+    email = request.form['email']
+    password = request.form['password']
+    remember_me = False
+    if 'remember_me' in request.form:
+        remember_me = True
+    registered_user = User.query.filter_by(email=email).first()
+    if registered_user is None:
+        flash('Username is invalid' , 'error')
+        return redirect(url_for('login'))
+    if not registered_user.check_password(password):
+        flash('Password is invalid','error')
+        return redirect(url_for('login'))
+    login_user(registered_user, remember = remember_me)
+
+    if registered_user.user_type == 'admin':
+        print "Admin"
+        return redirect(url_for('admin'))
+    if registered_user.user_type == 'tabmaster':
+        print "Tabmaster"
+        return redirect(url_for('tabmaster'))
+    return redirect(url_for('home'))
+
+
 
 @app.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('index')) 
+    return redirect(url_for('home')) 
 
 @login_manager.user_loader
 def load_user(id):

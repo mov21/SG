@@ -1,5 +1,6 @@
+
 <!doctype html>
-<title>OKatalogue</title>
+<title>Saint George City of Debate</title>
 <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
 <meta charset="utf-8">
 <style>
@@ -12,7 +13,6 @@ body {
 <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
 <script src="/static/js/jquery.js"></script>
 <script src="/static/js/bootstrap.js"></script>
-
 <div class="navbar navbar-inverse navbar-fixed-top">
 		<div class="navbar-inner">
 			<div class="container">
@@ -21,18 +21,39 @@ body {
 					<span class="icon-bar"></span> <span class="icon-bar"></span> <span
 						class="icon-bar"></span>
 				</button>
-				<a class="brand" >Saint George City of Debate</a>
+				<a class="brand" href="/" >Saint George City of Debate</a>
 				<div class="nav-collapse collapse">
+					
 					<ul class="nav">
+						
 						<li class="active"><a href="/">Home</a></li>
 						{% if g.user.is_authenticated()%}
-							<!---<li><a href="/new_clasa">New Clasa</a></li>-->
+							
+							{% if g.user.is_debater() %}
+								<li><a href="{{ url_for('program') }}">Program</a></li>
+								<li><a href="{{ url_for('logout') }}">Meciuri</a></li>
+								<li><a href="{{ url_for('logout') }}">Echipa</a></li>
+								<li><a href="{{ url_for('about_sfantu_gheorghe') }}">Sfantu Gheorghe</a></li>
+							{% endif %}
+							{% if g.user.is_judge() %}
+								<li><a href="{{ url_for('program') }}">Program</a></li>
+								<li><a href="{{ url_for('logout') }}">Meciuri</a></li>
+								<li><a href="{{ url_for('about_sfantu_gheorghe') }}">Sfantu Gheorghe</a></li>
+							{% endif %}
+							{% if g.user.is_tabmaster() %}
+								<li><a href="{{ url_for('logout') }}">Debatari</a></li>
+								<li><a href="{{ url_for('logout') }}">Arbitri</a></li>
+								<li><a href="{{ url_for('logout') }}">Clasament</a></li>
+								<li><a href="{{ url_for('logout') }}">Runde urmatoare</a></li>
+							{% endif %}
 							<li><a href="{{ url_for('logout') }}">Logout</a></li>
 						{% endif %}
 						{% if not g.user.is_authenticated()%}
+
 							<li><a href="{{ url_for('home') }}">Login</a></li>
 							<li><a href="{{ url_for('register') }}">Register</a></li>
 						{% endif %}
+						
 					</ul>
 				</div>
 				<!--/.nav-collapse -->
@@ -53,11 +74,12 @@ body {
 	{% endif %}
 	{% endwith %}
 
-	{% block body %}{% endblock %}
+	{% block body %}
+	{% endblock %}
 	<hr>
 	<footer id="footer">
-				<p>OKatalogue&copy; Pavel Nicolae Teodor 2014</p>
+				<p>SG &copy; Pavel Nicolae Teodor &copy; Mertoiu Alina </p>
 
-				Contact him at <a href="mailto:shekhargulati84@gmail.com">teo721@yahoo.com</a>.</p>	
+				Contact him at <a href="mailto:teo721@yahoo.com">teo721@yahoo.com</a>.</p>	
 	</footer>
 </div>

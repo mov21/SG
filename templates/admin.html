@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<h1> M-am logat ca admin </h1>
+<div id="main">
+
+    <h2>Tabmasters</h2>
+    <table class="table table-hover">
+    	<tr>
+    		<th>#
+    		<th>Tabmaster Name
+    	{%- for tabmaster in tabmasters %}
+    	<tr class={{ "success" }}>
+    		<td style={{ "text-decoration:none"}}>{{ tabmaster.id }}
+    		<td style={{ "text-decoration:none"}}>{{ tabmaster.name }}
+    	{% endfor %}
+    </table>
+    <p>
+      <a href="{{ url_for('new_tabmaster') }}" class="btn btn-large btn-primary">New Tab Master</a>
+    </p>
+
+     <p>
+      <a href="{{ url_for('del_tabmaster') }}" class="btn btn-large btn-primary">Delete Tab Master</a>
+    </p>
+</div>
+
+{% endblock %}
