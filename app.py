@@ -100,7 +100,7 @@ class Judge(db.Model):
 	def __init__(self, name):
 		self.name = name
 
-<<<<<<< HEAD
+
 class Tabmaster(db.Model):
     __tablename__="tabmasters"
     id = db.Column('tabmaster_id', db.Integer, primary_key=True)
@@ -123,7 +123,6 @@ def new_tabmaster():
             db.session.add(_tabmaster)
             db.session.commit()
             flash(_tabmaster.name + ' was successfully created')
-            print Tabmaster.query.get(1)
             return redirect(url_for('admin'))
     return render_template('new_tabmaster.html')
 
@@ -136,7 +135,6 @@ def del_tabmaster():
             flash('Name is required', 'error')
         else:
             _tabmaster = Tabmaster.query.filter_by(name=request.form['name']).one()
-            #print  _tabmaster.id
             db.session.delete(_tabmaster)
             db.session.commit()
             return redirect(url_for('admin'))
@@ -147,7 +145,7 @@ def del_tabmaster():
 def admin():
     return render_template('admin.html', tabmasters = Tabmaster.query.order_by(Tabmaster.id))    
 
-=======
+
 class Game(db.Model):
     __tablename__= "games"
     id = db.Column('game_id', db.Integer, primary_key=True)
@@ -161,8 +159,6 @@ class Game(db.Model):
         self.name = name
 
 
-        
->>>>>>> 01f68bfe5178deddb2c2a21a3d6e4a4515422d62
 @app.route('/')
 @login_required
 def home():
@@ -170,8 +166,7 @@ def home():
         return render_template('admin.html')
 	return render_template('home.html')
 
-<<<<<<< HEAD
-=======
+
 @app.route('/program')
 @login_required
 def program():
@@ -181,7 +176,7 @@ def program():
 @login_required
 def about_sfantu_gheorghe():
     return render_template('about_sfantu_gheorghe.html')
->>>>>>> 01f68bfe5178deddb2c2a21a3d6e4a4515422d62
+
 
 @app.route('/register' , methods=['GET','POST'])
 def register():
