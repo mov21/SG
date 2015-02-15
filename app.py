@@ -142,18 +142,20 @@ def del_tabmaster():
 @app.route('/admin/del_<id>_direct', methods=['POST', 'GET'])
 @login_required
 def del_tabmaster_direct(id):
-    if request.method == 'POST':
+    print id
+    if request.method == 'GET':
             print id
             _tabmaster = Tabmaster.query.get(id)
             db.session.delete(_tabmaster)
             db.session.commit()
-            return redirect(url_for('admin'))
-    return render_template('del_tabmaster_direct.html')
+            flash('Tab Master Successfully deleted.')
+    return redirect(url_for('admin'))
 
-@app.route('/admin/update_tabmaster', methods=['POST', 'GET'])
+
+@app.route('/admin/update_<id>tabmaster', methods=['POST', 'GET'])
 @login_required
-def update_tabmaster(tabmaster_name):
-    tabmaster_item = Tabmaster.query.filter_by(name=tabmaster_name).one()
+def update_tabmaster(id):
+    tabmaster_item = Tabmaster.query.get(id)
     tabmaster_id = tabmaster_item.id
     if request.method == 'GET':
         print "get"
@@ -161,7 +163,7 @@ def update_tabmaster(tabmaster_name):
     print "post"
     tabmaster_item.name = request.form['name']
     db.session.commit()
-    flash(tabmasters_name+' was successfully updated')
+    flash(tabmaster_item.name+' was successfully updated')
     return redirect(url_for('admin'))
 
 

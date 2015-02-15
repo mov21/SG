@@ -17,7 +17,11 @@
     		<td style={{ "text-decoration:none"}}>{{ tabmaster.name }}
             <td>
                 <p>
-                    <a href="{{ url_for('del_tabmaster_direct', id=tabmaster.id) }}" class="btn btn-large btn-primary">Delete Tab Master</a>
+                    <a href="{{ url_for('del_tabmaster_direct', id=tabmaster.id) }}" onClick = "return confirm('Are you sure?')">Delete Tab Master</a>
+                </p>
+            <td>
+                <p>
+                    <a href="{{ url_for('update_tabmaster', id=tabmaster.id) }}" class="btn btn-link">Update</a> 
                 </p>
     	{% endfor %}
     </table>  
@@ -27,6 +31,8 @@
         <p>
             <a href="{{ url_for('new_tabmaster') }}" class="btn btn-large btn-primary">New</a>
         </p>
+
+
 
 
 
