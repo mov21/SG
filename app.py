@@ -108,8 +108,7 @@ class Tabmaster(db.Model):
 
     def __init__(self, name):
         self.name = name
-    def __repr__(self):
-        return '<User %r %r>' % (self.name)
+
 
 
 @app.route('/admin/new_tabmaster', methods=['POST', 'GET'])
@@ -139,6 +138,31 @@ def del_tabmaster():
             db.session.commit()
             return redirect(url_for('admin'))
     return render_template('del_tabmaster.html')
+
+@app.route('/admin/del_<id>_direct', methods=['POST', 'GET'])
+@login_required
+def del_tabmaster_direct(id):
+    if request.method == 'POST':
+            print id
+            _tabmaster = Tabmaster.query.get(id)
+            db.session.delete(_tabmaster)
+            db.session.commit()
+            return redirect(url_for('admin'))
+    return render_template('del_tabmaster_direct.html')
+
+@app.route('/admin/update_tabmaster', methods=['POST', 'GET'])
+@login_required
+def update_tabmaster(tabmaster_name):
+    tabmaster_item = Tabmaster.query.filter_by(name=tabmaster_name).one()
+    tabmaster_id = tabmaster_item.id
+    if request.method == 'GET':
+        print "get"
+        return render_template('view_tabmaster.html')
+    print "post"
+    tabmaster_item.name = request.form['name']
+    db.session.commit()
+    flash(tabmasters_name+' was successfully updated')
+    return redirect(url_for('admin'))
 
 
 @app.route('/admin')
