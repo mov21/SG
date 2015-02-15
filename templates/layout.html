@@ -21,36 +21,38 @@ body {
 					<span class="icon-bar"></span> <span class="icon-bar"></span> <span
 						class="icon-bar"></span>
 				</button>
-				<a class="brand" href="/" >Saint George City of Debate</a>
+				<a class="brand" href='/' >Saint George City of Debate</a>
 				<div class="nav-collapse collapse">
 					
 					<ul class="nav">
 						
-						<li class="active"><a href="/">Home</a></li>
+						
 						{% if g.user.is_authenticated()%}
 							
 							{% if g.user.is_debater() %}
+							<li class="active"><a href="/">Home</a></li>
 								<li><a href="{{ url_for('program') }}">Program</a></li>
 								<li><a href="{{ url_for('logout') }}">Meciuri</a></li>
 								<li><a href="{{ url_for('logout') }}">Echipa</a></li>
 								<li><a href="{{ url_for('about_sfantu_gheorghe') }}">Sfantu Gheorghe</a></li>
 							{% endif %}
 							{% if g.user.is_judge() %}
+							<li class="active"><a href="/">Home</a></li>
 								<li><a href="{{ url_for('program') }}">Program</a></li>
 								<li><a href="{{ url_for('logout') }}">Meciuri</a></li>
 								<li><a href="{{ url_for('about_sfantu_gheorghe') }}">Sfantu Gheorghe</a></li>
 							{% endif %}
 							{% if g.user.is_tabmaster() %}
-								<li><a href="{{ url_for('logout') }}">Debatari</a></li>
-								<li><a href="{{ url_for('logout') }}">Arbitri</a></li>
+								<li><a href="{{ url_for('debaters') }}">Debatari</a></li>
+								<li><a href="{{ url_for('judges') }}">Arbitri</a></li>
 								<li><a href="{{ url_for('logout') }}">Clasament</a></li>
 								<li><a href="{{ url_for('logout') }}">Runde urmatoare</a></li>
 							{% endif %}
 							<li><a href="{{ url_for('logout') }}">Logout</a></li>
 						{% endif %}
 						{% if not g.user.is_authenticated()%}
-
-							<li><a href="{{ url_for('home') }}">Login</a></li>
+							<li class="active"><a href="/">Home</a></li>
+							<li><a href="{{ url_for('login') }}">Login</a></li>
 							<li><a href="{{ url_for('register') }}">Register</a></li>
 						{% endif %}
 						

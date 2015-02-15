@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+{% block body %}
+  <form action="" method=post class="form-horizontal">
+    <h2>Create Debater</h2>
+    <div class="control-group">
+        <div class="controls">
+          <input type="text" id="name" name="name" class="input-xlarge"
+            placeholder="Name: " value="{{ request.form.name }}"
+            required>
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="controls">
+          <input type="text" id="email" name="email" class="input-xlarge"
+            placeholder="Email: " value="{{ request.form.email }}"
+            required>
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="controls">
+          <input type="text" id="team" name="team" class="input-xlarge"
+            placeholder="Team: " value="{{ request.form.team }}"
+            required>
+        </div>
+    </div>
+
+    <div class="control-group">
+        <div class="controls">
+          <input type="text" id="club" name="club" class="input-xlarge"
+            placeholder="Club: " value="{{ request.form.club }}"
+            required>
+        </div>
+    </div>
+
+    <div class="control-group">
+        <div class="controls">
+          <button type="submit" class="btn btn-success">Create Debater</button>
+          <a href="{{ url_for('debaters') }}">Back</a>
+        </div>
+    </div>
+  </form>
+{% endblock %}

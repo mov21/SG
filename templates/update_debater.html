@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+{% block body %}
+  <form action="" method=post class="form-horizontal">
+    <h2>Update Debater</h2>
+    <div class="control-group">
+        <div class="controls">
+          <input type="text" id="name" name="name" class="input-xlarge"
+            placeholder="Name" value="{{debater.name}}"
+            required>
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="controls">
+          <input type="text" id="email" name="email" class="input-xlarge"
+            placeholder="Email" value="{{debater.email}}"
+            required>
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="controls">
+          <input type="text" id="team" name="team" class="input-xlarge"
+            placeholder="Team" value="{{debater.team}}"
+            required>
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="controls">
+          <input type="text" id="club" name="club" class="input-xlarge"
+            placeholder="Club" value="{{debater.club}}"
+            required>
+        </div>
+    </div>
+
+
+    <div class="control-group">
+        <div class="controls">
+          <button type="submit" class="btn btn-success">Update</button>
+          <a href="{{ url_for('debaters') }}">Back to list</a>
+        </div>
+    </div>
+  </form>
+{% endblock %}

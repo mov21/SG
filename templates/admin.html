@@ -8,13 +8,15 @@
     <table class="table table-hover">
     	<tr>
     		<th>#
-    		<th>Tabmaster Name
+    		<th>Name
+            <th>Email
             <th>
             <th>
     	{%- for tabmaster in tabmasters %}
     	<tr class={{ "success" }}>
     		<td style={{ "text-decoration:none"}}>{{ tabmaster.id }}
     		<td style={{ "text-decoration:none"}}>{{ tabmaster.name }}
+            <td style={{ "text-decoration:none"}}>{{ tabmaster.mail }}
             <td>
                 <p>
                     <a href="{{ url_for('del_tabmaster_direct', id=tabmaster.id) }}" onClick = "return confirm('Are you sure?')">Delete Tab Master</a>
@@ -29,7 +31,7 @@
             <a href="{{ url_for('del_tabmaster') }}" class="btn btn-large btn-primary">Delete Tab Master</a>
         </p> 
         <p>
-            <a href="{{ url_for('new_tabmaster') }}" class="btn btn-large btn-primary">New</a>
+            <a href="{{ url_for('create_tabmaster') }}" class="btn btn-large btn-primary">New</a>
         </p>
 
 
