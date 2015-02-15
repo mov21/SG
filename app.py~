@@ -5,6 +5,7 @@ from flask.ext.login import LoginManager
 from flask.ext.login import login_user , logout_user , current_user , login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 
+
 app = Flask(__name__)
 app.config.from_pyfile('todoapp.cfg')
 db = SQLAlchemy(app)
@@ -365,7 +366,7 @@ def create_judge():
                     judge = Judge(name)
                         
                     if User.query.filter_by(email = email).count() == 0:
-                        create_user(email,"debater")
+                        create_user(email,"judge")
                     user = User.query.filter_by(email = email).one()
                     judge.user_id = user.id
                            
@@ -414,21 +415,21 @@ def update_judge(id):
     email = request.form['email']
     club_name = request.form['club']
     
-    debater.name = name
+    judge.name = name
     
     if(user.email != email):
         try:
             user.email = email
         except:
             flash('A different user has this email', 'error')
-            return render_template('update_debater.html',debater = _debater)
+            return render_template('update_judge.html',judge = _judge)
     if(club.name != club_name):
         create_club(club)
         club = Club.query.filter_by(name = club).one()
         judge.club_id = club.id
         
     db.session.commit()
-    flash(debater.name+' was successfully updated')
+    flash(judge.name+' was successfully updated')
     return redirect(url_for('judges'))
 
 #
@@ -629,11 +630,9 @@ def login():
     login_user(registered_user, remember = remember_me)
 
     if registered_user.user_type == 'admin':
-        print "Admin"
         return redirect(url_for('admin'))
     if registered_user.user_type == 'tabmaster':
-        print "Tabmaster"
-        return redirect(url_for('debaters'))
+        return redirect(url_for('tabmaster'))
     return redirect(url_for('home'))
 
 

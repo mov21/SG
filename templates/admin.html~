@@ -23,7 +23,7 @@
                 </p>
             <td>
                 <p>
-                    <a href="{{ url_for('del_tabmaster_direct', id=tabmaster.id) }}" onClick = "return confirm('Are you sure?')" class="btn btn-danger btn-small">Delete</a>
+                    <a href="{{ url_for('del_tabmaster_direct', id=tabmaster.id) }}" onClick = "return confirm('Are you sure?')" class="btn btn-danger btn-small">Delete Tab Master</a>
                 </p>
 
 

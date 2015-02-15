@@ -5,7 +5,6 @@ from flask.ext.login import LoginManager
 from flask.ext.login import login_user , logout_user , current_user , login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 
-
 app = Flask(__name__)
 app.config.from_pyfile('todoapp.cfg')
 db = SQLAlchemy(app)
@@ -632,7 +631,7 @@ def login():
     if registered_user.user_type == 'admin':
         return redirect(url_for('admin'))
     if registered_user.user_type == 'tabmaster':
-        return redirect(url_for('tabmaster'))
+        return redirect(url_for('debaters'))
     return redirect(url_for('home'))
 
 
