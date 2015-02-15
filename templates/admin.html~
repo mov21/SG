@@ -16,22 +16,20 @@
     	<tr class={{ "success" }}>
     		<td style={{ "text-decoration:none"}}>{{ tabmaster.id }}
     		<td style={{ "text-decoration:none"}}>{{ tabmaster.name }}
-            <td style={{ "text-decoration:none"}}>{{ tabmaster.mail }}
+            <td style={{ "text-decoration:none"}}>{{ tabmaster.email }}
             <td>
                 <p>
                     <a href="{{ url_for('update_tabmaster', id=tabmaster.id) }}" class="btn btn-primary btn-small">Update</a> 
                 </p>
             <td>
                 <p>
-                    <a href="{{ url_for('del_tabmaster_direct', id=tabmaster.id) }}" onClick = "return confirm('Are you sure?')" class="btn btn-danger btn-small">Delete Tab Master</a>
+                    <a href="{{ url_for('del_tabmaster_direct', id=tabmaster.id) }}" onClick = "return confirm('Are you sure?')" class="btn btn-danger btn-small">Delete</a>
                 </p>
 
 
     	{% endfor %}
     </table>  
-        <p>
-            <a href="{{ url_for('del_tabmaster') }}" class="btn btn-large btn-primary">Delete Tab Master</a>
-        </p> 
+
         <p>
             <a href="{{ url_for('create_tabmaster') }}" class="btn btn-large btn-primary">New</a>
         </p>

@@ -1,37 +1,34 @@
 {% extends "layout.html" %}
 {% block body %}
 
-<h1> M-am logat ca admin </h1>
+
 <div id="main">
 
     <h2>Tabmasters</h2>
     <table class="table table-hover">
-    	<tr>
-    		<th>#
-    		<th>Name
+        <tr>
+            <th>#
+            <th>Name
             <th>Email
             <th>
             <th>
-    	{%- for tabmaster in tabmasters %}
-    	<tr class={{ "success" }}>
-    		<td style={{ "text-decoration:none"}}>{{ tabmaster.id }}
-    		<td style={{ "text-decoration:none"}}>{{ tabmaster.name }}
-            <td style={{ "text-decoration:none"}}>{{ tabmaster.mail }}
+        {%- for tabmaster in tabmasters %}
+        <tr class={{ "success" }}>
+            <td style={{ "text-decoration:none"}}>{{ tabmaster.id }}
+            <td style={{ "text-decoration:none"}}>{{ tabmaster.name }}
+            <td style={{ "text-decoration:none"}}>{{ tabmaster.email }}
             <td>
                 <p>
                     <a href="{{ url_for('update_tabmaster', id=tabmaster.id) }}" class="btn btn-primary btn-small">Update</a> 
                 </p>
             <td>
                 <p>
-                    <a href="{{ url_for('del_tabmaster_direct', id=tabmaster.id) }}" onClick = "return confirm('Are you sure?')" class="btn btn-danger btn-small">Delete</a>
+                    <a href="{{ url_for('delete_tabmaster', id=tabmaster.id) }}" onClick = "return confirm('Are you sure?')" class="btn btn-danger btn-small">Delete</a>
                 </p>
 
 
-    	{% endfor %}
+        {% endfor %}
     </table>  
-        <p>
-            <a href="{{ url_for('del_tabmaster') }}" class="btn btn-large btn-primary">Delete Tab Master</a>
-        </p> 
         <p>
             <a href="{{ url_for('create_tabmaster') }}" class="btn btn-large btn-primary">New</a>
         </p>

@@ -4,6 +4,8 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager
 from flask.ext.login import login_user , logout_user , current_user , login_required
 from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy import desc
+
 
 app = Flask(__name__)
 app.config.from_pyfile('todoapp.cfg')
@@ -78,15 +80,17 @@ class Debater(db.Model):
 
 
 class Team(db.Model):
-	__tablename__ = "teams"
-	id = db.Column('team_id', db.Integer, primary_key=True)
-	name = db.Column(db.String(30))
+    points = db.Column(db.Integer)
+    __tablename__ = "teams"
+    id = db.Column('team_id', db.Integer, primary_key=True)
+    name = db.Column(db.String(30))
     #oras si liceu 
-	club_id = db.Column(db.Integer, db.ForeignKey('clubs.club_id'))
-	debaters = db.relationship('Debater', backref='team', lazy='dynamic')
-
-	def __init__(self, name):
-		self.name = name
+    #points = db.Column(db.Integer)
+    club_id = db.Column(db.Integer, db.ForeignKey('clubs.club_id'))
+    debaters = db.relationship('Debater', backref='team', lazy='dynamic')
+    #points = db.Column(db.Integer)
+    def __init__(self, name):
+        self.name = name
 
 class Club(db.Model):
 	__tablename__ = "clubs"
@@ -108,12 +112,12 @@ class Judge(db.Model):
 		self.name = name
 
 
+
 class Tabmaster(db.Model):
     __tablename__="tabmasters"
     id = db.Column('tabmaster_id', db.Integer, primary_key=True)
     name = db.Column(db.String(30))
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
-    mail = db.Column(db.String(50))
 
     def __init__(self, name):
         self.name = name
@@ -124,12 +128,32 @@ class Game(db.Model):
     id = db.Column('game_id', db.Integer, primary_key=True)
     name = db.Column(db.String(30))
     goverment_id= db.Column(db.Integer, db.ForeignKey('teams.team_id'))
-    oposition_id = db.Column(db.Integer, db.ForeignKey('teams.team_id'))
-    round = db.Column(db.String(30))
+    opposition_id = db.Column(db.Integer, db.ForeignKey('teams.team_id'))
+    round_number = db.Column(db.Integer)
+    room = db.Column(db.String(30))
+    decision = db.Column(db.String(30))
+    judge_id = db.Column(db.Integer, db.ForeignKey('judges.judge_id'))
+    goverment1_points = db.Column(db.Integer)
+    goverment1_id = db.Column(db.Integer, db.ForeignKey('debaters.debater_id'))
+    goverment2_points = db.Column(db.Integer)
+    goverment2_id = db.Column(db.Integer, db.ForeignKey('debaters.debater_id'))
+    goverment3_points = db.Column(db.Integer)
+    goverment3_id = db.Column(db.Integer, db.ForeignKey('debaters.debater_id'))
+    goverment4_points = db.Column(db.Integer)
+    opposition1_points = db.Column(db.Integer)
+    opposition1_id = db.Column(db.Integer, db.ForeignKey('debaters.debater_id'))
+    opposition2_points = db.Column(db.Integer)
+    opposition2_id = db.Column(db.Integer, db.ForeignKey('debaters.debater_id'))
+    opposition3_points = db.Column(db.Integer)
+    opposition3_id = db.Column(db.Integer, db.ForeignKey('debaters.debater_id'))
+    opposition4_points = db.Column(db.Integer)
     time = db.Column(db.DateTime)
-
-    def __init__(self, name):
-        self.name = name
+    #
+    #   Judge feedback !?
+    #
+    def __init__(self, round_number, room):
+        self.round_number = round_number
+        self.room = room
 
 
 #
@@ -137,6 +161,33 @@ class Game(db.Model):
 #   Functions
 #
 #
+def update_teams_points():
+    teams = Team.query.all()
+    for team in teams:
+        points = 0
+        oppositions = Game.query.filter_by(opposition_id=team.id)
+        points += opposition_points(oppositions)
+        goverments = Game.query.filter_by(goverment_id=team.id)
+        points += goverment_points(goverments)
+        team.points = points
+
+def opposition_points(games):
+    points = 0
+    for game in games:
+        points += game.opposition1_points
+        points += game.opposition2_points
+        points += game.opposition3_points
+        points += game.opposition4_points
+    return points
+def goverment_points(games):
+    points = 0
+    for game in games:
+        points += game.goverment1_points
+        points += game.goverment2_points
+        points += game.goverment3_points
+        points += game.goverment4_points
+    return points
+
 
 def create_user(email,role):
     user = User(email,"123sdasee123!",role)
@@ -153,7 +204,6 @@ def create_club(name):
     club = Club(name)
     db.session.add(club)
     db.session.commit()
-
 
 #
 #
@@ -414,21 +464,21 @@ def update_judge(id):
     email = request.form['email']
     club_name = request.form['club']
     
-    judge.name = name
+    debater.name = name
     
     if(user.email != email):
         try:
             user.email = email
         except:
             flash('A different user has this email', 'error')
-            return render_template('update_judge.html',judge = _judge)
+            return render_template('update_debater.html',debater = _debater)
     if(club.name != club_name):
         create_club(club)
         club = Club.query.filter_by(name = club).one()
         judge.club_id = club.id
         
     db.session.commit()
-    flash(judge.name+' was successfully updated')
+    flash(debater.name+' was successfully updated')
     return redirect(url_for('judges'))
 
 #
@@ -446,18 +496,119 @@ def delete_judge(id):
 
 #
 #
+#
+#   Tabmaster Create Round
+#
+#
+@app.route('/tabmaster/round/', methods=['GET','POST'])
+def round():
+    if request.method == 'POST':
+         return render_template("round.html")
+    games = Game.query.order_by(desc(Game.round_number))
+    round_number = games.first().round_number 
+    games = Game.query.filter_by(round_number = round_number)
+    _games = []
+    for game in games:
+        _game = {}
+        _game['id'] = game.id
+        goverment = Team.query.get(game.goverment_id)
+        opposition = Team.query.get(game.opposition_id)
+        _game['goverment'] = goverment.name
+        _game['opposition'] = opposition.name
+        _game['room'] = game.room
+        judge = Judge.query.get(game.judge_id)
+        _game['judge'] = judge.name
+        _games.append(_game)
+    return render_template("round.html", games = _games, round_number = round_number)
+
+
+
+
+@app.route('/tabmaster/create_round', methods=['GET','POST'])
+def create_round_pannel():
+    return render_template("create_round.html")
+
+@app.route('/tabmaster/create_round/<mod>', methods=['GET'])
+def create_round(mod):
+    print "intra"
+    update_teams_points()
+    teams = Team.query.order_by(desc(Team.points))
+    games = Game.query.all()
+    if len(games) == 0:
+        round_number = 0 
+    else:
+        games = Game.query.order_by(Game.round)
+        round_number = games.last().round_number + 1 
+    if mod == "High_Low":
+        odd = False
+        if (teams.count() % 2 == 1):
+            odd = True
+        games = [] 
+        i = 0 
+        for team in teams:
+            if odd and i == n:
+                break;
+            if i < n/2: 
+                game = Game(round_number,i)
+                game.goverment_id = team.id
+                games.append(game)
+            else:
+                games[i-n/2].opposition_id = team.id
+            i += 1
+    if mod == "High_High":
+        print "high"
+        odd = False
+        if (teams.count() % 2 == 1):
+            odd = True
+        games = [] 
+        i = 0 
+        for team in teams:
+            if odd and i == n:
+                break;
+            if i % 2 == 0: 
+                game = Game(round_number,i)
+                game.goverment_id = team.id
+                print "gov id "+str(team.id)
+                games.append(game)
+            else:
+                print "op id "+str(team.id)
+                game.opposition_id = team.id
+            i += 1
+    i = 1
+    for game in games:
+        print "game room "+str(game.room)
+        judge = Judge.query.get(i)
+        game.judge_id = judge.id
+        i += 1
+        db.session.add(game)
+    db.session.commit()
+    return redirect(url_for('round')) 
+
+@app.route('/tabmaster/clasament', methods=['GET','POST'])
+def ranking():
+    update_teams_points()
+    teams = Team.query.order_by(desc(Team.points))
+    return render_template("ranking_teams.html",teams=teams)
+
+@app.route('/tabmaster/break', methods=['GET','POST'])
+def Break():
+    update_teams_points()
+    teams = Team.query.order_by(desc(Team.points)).limit(8)
+    return render_template("ranking_teams.html",teams=teams)
+
+@app.route('/tabmaster/upload', methods=['GET','POST'])
+def upload():
+    #update_teams_points()
+    return render_template("ranking_teams.html")
+
+#
+#
 #   Admin tabmasters
 #
 #
 
-
-#
-#   CREATE
-#
-
-
-
-@app.route('/admin/create_tabmaster', methods=['POST', 'GET'])
+@app.route('/admin/tabmasters/create', methods=['POST', 'GET'])
+@login_required
 def create_tabmaster():
     if request.method == 'POST':
         #
@@ -475,10 +626,9 @@ def create_tabmaster():
                 tabmaster = Tabmaster(name)
                     
                 if User.query.filter_by(email = email).count() == 0:
-                    create_user(email,"tambaster")
+                    create_user(email,"tabmaster")
                 user = User.query.filter_by(email = email).one()
                 tabmaster.user_id = user.id
-                tabmaster.mail = email
                         
                 db.session.add(tabmaster)
                 db.session.commit()
@@ -493,23 +643,9 @@ def create_tabmaster():
 #   DELETE
 #
 
-@app.route('/admin/del_tabmaster', methods=['POST', 'GET'])
+@app.route('/admin/tabmasters/delete/<id>', methods=['POST', 'GET'])
 @login_required
-def del_tabmaster():
-    if request.method == 'POST':
-        if not request.form['email']:
-            flash('Name is required', 'error')
-        else:
-            user = User.query.filter_by(email = email).one()
-            _tabmaster = Tabmaster.query.filter_by(user_id=user.id).one()
-            db.session.delete(_tabmaster)
-            db.session.commit()
-            return redirect(url_for('admin'))
-    return render_template('del_tabmaster.html')
-
-@app.route('/admin/del_<id>_direct', methods=['POST', 'GET'])
-@login_required
-def del_tabmaster_direct(id):
+def delete_tabmaster(id):
     print id
     if request.method == 'GET':
             print id
@@ -519,12 +655,11 @@ def del_tabmaster_direct(id):
             flash('Tab Master Successfully deleted.')
     return redirect(url_for('admin'))
 
-
 #
 #   Update
 #
 
-@app.route('/admin/update_<id>tabmaster', methods=['POST', 'GET'])
+@app.route('/admin/tabmasters/update/<id>', methods=['POST', 'GET'])
 @login_required
 def update_tabmaster(id):
     tabmaster = Tabmaster.query.get(id)
@@ -564,10 +699,18 @@ def update_tabmaster(id):
     return redirect(url_for('admin'))
 
 
-
 @app.route('/admin')
 def admin():
-    return render_template('admin.html', tabmasters = Tabmaster.query.order_by(Tabmaster.id))    
+    tabmasters =Tabmaster.query.all()
+    _tabmasters = []
+    for tabmaster in tabmasters:
+        _tabmaster = {}
+        _tabmaster['id'] = tabmaster.id
+        _tabmaster['name'] = tabmaster.name
+        user = User.query.get(tabmaster.user_id)
+        _tabmaster['email'] = user.email
+        _tabmasters.append(_tabmaster)
+    return render_template('admin.html', tabmasters = _tabmasters)    
 
 #
 #
@@ -629,8 +772,10 @@ def login():
     login_user(registered_user, remember = remember_me)
 
     if registered_user.user_type == 'admin':
+        print "Admin"
         return redirect(url_for('admin'))
     if registered_user.user_type == 'tabmaster':
+        print "Tabmaster"
         return redirect(url_for('debaters'))
     return redirect(url_for('home'))
 
@@ -652,4 +797,3 @@ def before_request():
 if __name__ == '__main__':
     db.create_all()
     app.run(debug=True)
-
